@@ -1,5 +1,5 @@
 """
-Tokenize the text using the
+LSA Coh-Metrix measures using Stanza for managing the language data.
 """
 
 from stanza.models.common.doc import Sentence
@@ -24,8 +24,9 @@ class SBERTLSA:
         """
         Compute each LSA metric on the text.
 
-        :param text:
-        :return:
+        :param text: a Swedish text as a string.
+        :return: a dictionary of the computed metrics, where the key is metric name as a
+        string, and the value is the metric as a float.
         """
         doc = self.parser(text)  # type: Document
         results = {}  # type: dict[str, float]
@@ -41,10 +42,11 @@ class SBERTLSA:
 
 def adjacent_sentences_overlap(sentences:list[Sentence]) -> tuple[float, float]:
     """
-    LSASS1: LSA overlap, adjacent sentences, mean
-    LSASS1d: LSA overlap, adjacent sentences, standard deviation
-    :param sentences:
-    :return:
+    The semantic overlap between each adjacent sentence pair in the text. This
+    consists of LSASS1 (the mean overlap) and LSASS1d (the standard deviation overlap).
+
+    :param sentences: a list of sentences making up the text.
+    :return: the LSASS1 and LSASS1d as a tuple of floats: (LSASS1, LSASS1d)
     """
     embeddings = get_sentences_embeddings(sentences)
     return lsa.lsa_adjacent_overlap(embeddings)
@@ -52,13 +54,14 @@ def adjacent_sentences_overlap(sentences:list[Sentence]) -> tuple[float, float]:
 
 def all_sentences_overlap(sentences: list[Sentence]) -> tuple[float, float]:
     """
-    LSASSa: LSA overlap, all sentences, mean.
-    LSASSad: LSA overlap, all sentences, standard deviation.
+    The semantic overlap between every possible sentence pair in the text. This
+    consists of LSASSa (the mean overlap) and LSASSad (the standard deviation overlap).
 
-    Note: this is not an official Coh-Metrix index.
+    Note: LSASSa and LSASSad are not official Coh-Metrix indexes. These are
+    generalizations of the LSASSp and LSASSpd indexes.
 
-    :param sentences:
-    :return:
+    :param sentences: a list of sentences making up the text.
+    :return: the LSASSa and LSASSad as a tuple of floats: (LSASSa, LSASSad)
     """
     embeddings = get_sentences_embeddings(sentences)
     return lsa.lsa_all_overlap(embeddings)
@@ -66,11 +69,11 @@ def all_sentences_overlap(sentences: list[Sentence]) -> tuple[float, float]:
 
 def all_sentences_overlap_paragraph(paragraphs: list[Paragraph]) -> tuple[float, float]:
     """
-    LSASSp: LSA overlap, all sentences in paragraph, mean.
-    LSASSpd: LSA overlap, all sentences in paragraph, standard deviation.
+    The semantic overlap between every possible sentence pair within each paragraph. This
+    consists of LSASSp (the mean overlap) and LSASSpd (the standard deviation overlap).
 
-    :param paragraphs:
-    :return: a tuple (mean, std)
+    :param paragraphs: a list of paragraphs making up the text.
+    :return: the LSASSp and LSASSpd as a tuple of floats: (LSASSp, LSASSpd)
     """
     overlaps = [all_sentences_overlap(paragraph.sentences) for paragraph in paragraphs]
     return np.mean(overlaps), np.std(overlaps)
@@ -78,22 +81,23 @@ def all_sentences_overlap_paragraph(paragraphs: list[Paragraph]) -> tuple[float,
 
 def adjacent_paragraphs_overlap(paragraphs: list[Paragraph]) -> tuple[float, float]:
     """
-    LSAPP1: LSA overlap, adjacent paragraphs, mean.
-    LSAPP1d: LSA overlap, adjacent paragraphs, standard deviation.
+    The semantic overlap between each adjacent paragraph pair in the text. This
+    consists of LSAPP1 (the mean overlap) and LSAPP1d (the standard deviation overlap).
 
-    :param paragraphs:
-    :return:
+    :param paragraphs: a list of paragraphs making up the text.
+    :return: the LSAPP1 and LSAPP1d as a tuple of floats: (LSAPP1, LSAPP1d)
     """
     raise NotImplementedError()
 
 
 def given_new(sentences:list[Sentence]) -> tuple[float, float]:
     """
-    LSAGN: LSA given/new, sentences, mean
-    LSAGNd: LSA given/new, sentences, standard deviation
+    The given/new ratio for each sentence in relation to its preceding sentences.
+    This consists of LSAGN (the mean given/new ratio) and LSAGNd (the standard
+    deviation given/new ratio).
 
-    :param sentences:
-    :return:
+    :param sentences: a list of sentences making up the text.
+    :return: the LSAGN and LSAGNd as a tuple of floats: (LSAGN, LSAGNd)
     """
     embeddings = get_sentences_embeddings(sentences)
     return lsa.lsa_given_new(embeddings)
@@ -110,6 +114,7 @@ def get_sentences_embeddings(sentences: list[Sentence]) -> list[lsa.Embedding]:
 
 
 def test_sbert_lsa():
+    # Test by parsing a text and computing its metrics.
     sbert_lsa = SBERTLSA()
     text = "Bakterier (Bacteria) eller eubakterier (Eubacteria) är encelliga mikroorganismer utan cellkärna " \
            "och andra membranomslutna organeller; de har dock ribosomer. Bakterier räknas till prokaryoterna " \
