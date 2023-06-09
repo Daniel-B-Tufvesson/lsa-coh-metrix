@@ -6,7 +6,7 @@ This is an implementation of the Latent Semantic Analysis (LSA) cohesion measure
 The main class is `SBERTLSA` in `lsa_metrix.py`. Creating an instance of this, loads the SBERT model and the Stanza neural pipeline. Calling `compute_metrics` with a Swedish text string computes each LSA Coh-Metrix index, and returns a dictionary of the resulting metrics. 
 
 ### Example
-Here is an example usage where the introduction to Wikipedia article is summarized.
+Here is an example usage where the cohesion of an introduction to a Wikipedia article is measured.
 ```python
 import pprint as pp
 
