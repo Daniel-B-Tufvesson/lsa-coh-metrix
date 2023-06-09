@@ -2,6 +2,8 @@
 
 This is an implementation of the Latent Semantic Analysis (LSA) cohesion measures from Coh-Metrix. It uses Stanza (Qi et al. 2020) for parsing texts and a Swedish SBERT model from the National Library of Sweden (Rekathati, 2021) for creating sentence embeddings.
 
+This project and the codes are based on a research project I and others conducted in a university course in applied cognitive science.
+
 ## Running the script
 The main class is `SBERTLSA` in `lsa_metrix.py`. Creating an instance of this, loads the SBERT model and the Stanza neural pipeline. Calling `compute_metrics` with a Swedish text string computes each LSA Coh-Metrix index, and returns a dictionary of the resulting metrics. 
 
